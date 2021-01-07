@@ -1,0 +1,26 @@
+version: "3"
+services:
+  mysql:
+    image: mysql:5.7
+    volumes:
+      - database:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=db
+      - MYSQL_USER=docker
+      - MYSQL_PASSWORD=docker
+  # nest:
+  #   depends_on:
+  #     - mysql
+  #   image: node:15
+  #   ports:
+  #     - "3010:3010"
+  #   volumes:
+  #     - ./:/home/node/app
+  #   working_dir: /home/node/app
+  #   command: npm run dev
+
+volumes:
+  database:
