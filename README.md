@@ -80,3 +80,11 @@ mutation CreateOrder {
   }
 }
 ```
+
+## Documentation
+
+https://fr.wikipedia.org/wiki/Isolation_(informatique)
+
+https://medium.com/neoxia/deepdive-voyage-au-pays-des-lock-mysql-innodb-2bb043f9739
+
+https://makina-corpus.com/blog/metier/2015/bien-debuter-avec-les-transactions-sql
