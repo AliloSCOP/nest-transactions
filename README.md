@@ -83,6 +83,8 @@ mutation CreateOrder {
 
 ## Documentation
 
+https://github.com/odavid/typeorm-transactional-cls-hooked
+
 https://fr.wikipedia.org/wiki/Isolation_(informatique)
 
 https://medium.com/neoxia/deepdive-voyage-au-pays-des-lock-mysql-innodb-2bb043f9739
