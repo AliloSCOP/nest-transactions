@@ -7,17 +7,10 @@ import {
 } from 'apollo-server-testing';
 import gql from 'graphql-tag';
 import { createConnection } from 'typeorm';
-import {
-  initializeTransactionalContext,
-  patchTypeORMRepositoryWithBaseRepository,
-} from 'typeorm-transactional-cls-hooked';
 import { OrderProductEntity } from '../src/orders/entities/order-product.entity';
 import { OrderEntity } from '../src/orders/entities/order.entity';
 import { ProductEntity } from '../src/products/entities/product.entity';
 import { AppModule } from './../src/app.module';
-
-initializeTransactionalContext();
-patchTypeORMRepositoryWithBaseRepository();
 
 const PRODUCTS = [
   { id: 1, name: 'tomato', lastCustomer: null, stock: 3 },

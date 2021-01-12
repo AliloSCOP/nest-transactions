@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Transactional } from 'typeorm-transactional-cls-hooked';
 import { ProductEntity } from '../entities/product.entity';
 
 @Injectable()
@@ -19,7 +18,6 @@ export class ProductsService {
     return this.productsRepo.find();
   }
 
-  @Transactional()
   async decreaseStock(productId: number, quantity: number, user: string) {
     if (quantity < 1) {
       throw new Error('quantity must be a positive integer');

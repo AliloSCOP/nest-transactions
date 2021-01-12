@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Transactional } from 'typeorm-transactional-cls-hooked';
 import { OrderProductEntity } from '../entities/order-product.entity';
 
 @Injectable()
@@ -19,7 +18,6 @@ export class OrderProductsService {
     return this.orderProductsRepo.find({ where: { orderId: orderId } });
   }
 
-  @Transactional()
   create(orderId: number, productId: number, quantity: number) {
     return this.orderProductsRepo.insert({ orderId, productId, quantity });
   }
