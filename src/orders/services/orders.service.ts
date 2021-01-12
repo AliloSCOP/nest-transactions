@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Transactional } from 'typeorm-transactional-cls-hooked';
 import { ProductsService } from '../../products/services/products.service';
 import { OrderEntity } from '../entities/order.entity';
 import { OrderProductsService } from './order-products.service';
@@ -26,7 +25,6 @@ export class OrdersService {
     return this.ordersRepo.find();
   }
 
-  @Transactional()
   async create(
     user: string,
     basket: { productId: number; quantity: number }[],
@@ -35,41 +33,6 @@ export class OrdersService {
     const order = await this.ordersRepo.save({
       user,
     });
-
-    await waait(delay);
-
-    await Promise.all(
-      basket.map((b) =>
-        this.orderProductsService.create(order.id, b.productId, b.quantity),
-      ),
-    );
-
-    await waait(delay);
-
-    await Promise.all(
-      basket.map((b) =>
-        this.productsService.decreaseStock(b.productId, b.quantity, user),
-      ),
-    );
-
-    await waait(delay);
-
-    return order;
-  }
-
-  /**
-    Same as create except execution order
-   */
-  @Transactional()
-  async create2(
-    user: string,
-    basket: { productId: number; quantity: number }[],
-    delay = 100,
-  ) {
-    const order = await this.ordersRepo.save({
-      user,
-    });
-
     await waait(delay);
 
     await Promise.all(
