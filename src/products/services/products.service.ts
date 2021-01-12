@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { ProductEntity } from '../entities/product.entity';
 
 @Injectable()
@@ -18,12 +18,17 @@ export class ProductsService {
     return this.productsRepo.find();
   }
 
-  async decreaseStock(productId: number, quantity: number, user: string) {
+  async decreaseStock(
+    manager: EntityManager,
+    productId: number,
+    quantity: number,
+    user: string,
+  ) {
     if (quantity < 1) {
       throw new Error('quantity must be a positive integer');
     }
 
-    const product = await this.productsRepo.findOne(productId, {
+    const product = await manager.findOne(ProductEntity, productId, {
       // lock: { mode: 'pessimistic_write' },
     });
 
@@ -35,7 +40,7 @@ export class ProductsService {
       throw new Error('not enough stock');
     }
 
-    await this.productsRepo.update(1, {
+    await manager.update(ProductEntity, 1, {
       stock: product.stock - quantity,
       lastCustomer: user,
     });

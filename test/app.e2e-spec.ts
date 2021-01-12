@@ -131,95 +131,95 @@ describe('AppController (e2e)', () => {
     expect(errors.length).toBe(1);
   });
 
-  it('ORDER 150ms delay', async () => {
-    const { query, mutate } = apolloClient;
+  // it('ORDER 150ms delay', async () => {
+  //   const { query, mutate } = apolloClient;
 
-    const johnOrder = mutate({
-      mutation: CREATE_ORDER_MUTATION,
-      variables: {
-        input: {
-          user: 'John',
-          orderProducts: [
-            {
-              productId: 1,
-              quantity: 2,
-            },
-          ],
-        },
-      },
-    });
+  //   const johnOrder = mutate({
+  //     mutation: CREATE_ORDER_MUTATION,
+  //     variables: {
+  //       input: {
+  //         user: 'John',
+  //         orderProducts: [
+  //           {
+  //             productId: 1,
+  //             quantity: 2,
+  //           },
+  //         ],
+  //       },
+  //     },
+  //   });
 
-    const bobOrder = waait(150).then(() => {
-      return mutate({
-        mutation: CREATE_ORDER_MUTATION,
-        variables: {
-          input: {
-            user: 'Bob',
-            orderProducts: [
-              {
-                productId: 1,
-                quantity: 1,
-              },
-            ],
-          },
-        },
-      });
-    });
+  //   const bobOrder = waait(150).then(() => {
+  //     return mutate({
+  //       mutation: CREATE_ORDER_MUTATION,
+  //       variables: {
+  //         input: {
+  //           user: 'Bob',
+  //           orderProducts: [
+  //             {
+  //               productId: 1,
+  //               quantity: 1,
+  //             },
+  //           ],
+  //         },
+  //       },
+  //     });
+  //   });
 
-    await Promise.all([johnOrder, bobOrder]);
+  //   await Promise.all([johnOrder, bobOrder]);
 
-    const {
-      data: { products },
-    } = await query({
-      query: PRODUCTS_QUERY,
-    });
+  //   const {
+  //     data: { products },
+  //   } = await query({
+  //     query: PRODUCTS_QUERY,
+  //   });
 
-    expect(products.find((p) => p.id === 1).stock).toBe(0);
-  });
+  //   expect(products.find((p) => p.id === 1).stock).toBe(0);
+  // });
 
-  it('ORDER 10ms delay', async () => {
-    const { query, mutate } = apolloClient;
+  // it('ORDER 10ms delay', async () => {
+  //   const { query, mutate } = apolloClient;
 
-    const johnOrder = mutate({
-      mutation: CREATE_ORDER_MUTATION,
-      variables: {
-        input: {
-          user: 'John',
-          orderProducts: [
-            {
-              productId: 1,
-              quantity: 2,
-            },
-          ],
-        },
-      },
-    });
+  //   const johnOrder = mutate({
+  //     mutation: CREATE_ORDER_MUTATION,
+  //     variables: {
+  //       input: {
+  //         user: 'John',
+  //         orderProducts: [
+  //           {
+  //             productId: 1,
+  //             quantity: 2,
+  //           },
+  //         ],
+  //       },
+  //     },
+  //   });
 
-    const bobOrder = waait(10).then(() => {
-      return mutate({
-        mutation: CREATE_ORDER_MUTATION,
-        variables: {
-          input: {
-            user: 'Bob',
-            orderProducts: [
-              {
-                productId: 1,
-                quantity: 1,
-              },
-            ],
-          },
-        },
-      });
-    });
+  //   const bobOrder = waait(10).then(() => {
+  //     return mutate({
+  //       mutation: CREATE_ORDER_MUTATION,
+  //       variables: {
+  //         input: {
+  //           user: 'Bob',
+  //           orderProducts: [
+  //             {
+  //               productId: 1,
+  //               quantity: 1,
+  //             },
+  //           ],
+  //         },
+  //       },
+  //     });
+  //   });
 
-    await Promise.all([johnOrder, bobOrder]);
+  //   await Promise.all([johnOrder, bobOrder]);
 
-    const {
-      data: { products },
-    } = await query({
-      query: PRODUCTS_QUERY,
-    });
+  //   const {
+  //     data: { products },
+  //   } = await query({
+  //     query: PRODUCTS_QUERY,
+  //   });
 
-    expect(products.find((p) => p.id === 1).stock).toBe(0);
-  });
+  //   expect(products.find((p) => p.id === 1).stock).toBe(0);
+  // });
 });

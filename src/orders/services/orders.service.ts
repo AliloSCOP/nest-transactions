@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { ProductsService } from '../../products/services/products.service';
 import { OrderEntity } from '../entities/order.entity';
 import { OrderProductsService } from './order-products.service';
@@ -26,18 +26,22 @@ export class OrdersService {
   }
 
   async create(
+    manager: EntityManager,
     user: string,
     basket: { productId: number; quantity: number }[],
     delay = 100,
   ) {
-    const order = await this.ordersRepo.save({
-      user,
-    });
+    const order = await manager.save(manager.create(OrderEntity, { user }));
     await waait(delay);
 
     await Promise.all(
       basket.map((b) =>
-        this.productsService.decreaseStock(b.productId, b.quantity, user),
+        this.productsService.decreaseStock(
+          manager,
+          b.productId,
+          b.quantity,
+          user,
+        ),
       ),
     );
 
@@ -45,7 +49,12 @@ export class OrdersService {
 
     await Promise.all(
       basket.map((b) =>
-        this.orderProductsService.create(order.id, b.productId, b.quantity),
+        this.orderProductsService.create(
+          manager,
+          order.id,
+          b.productId,
+          b.quantity,
+        ),
       ),
     );
 

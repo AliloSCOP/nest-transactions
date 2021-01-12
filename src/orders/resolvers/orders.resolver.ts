@@ -1,3 +1,4 @@
+import { UseInterceptors } from '@nestjs/common';
 import {
   Args,
   Mutation,
@@ -6,6 +7,9 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
+import { EntityManager } from 'typeorm';
+import { TransactionParam } from '../../common/transactions/transaction-manager.decorator';
+import { TransactionInterceptor } from '../../common/transactions/transaction.interceptor';
 import { CreateOrderInput } from '../dtos/create-order.dto';
 import { Order } from '../models/order.model';
 import { OrderProductsService } from '../services/order-products.service';
@@ -28,8 +32,12 @@ export class OrdersResolver {
     return this.orderProductsService.findByOrder(order.id);
   }
 
+  @UseInterceptors(TransactionInterceptor)
   @Mutation(() => Order, { name: 'createOrder' })
-  async create(@Args('input') input: CreateOrderInput) {
-    return this.ordersService.create(input.user, input.orderProducts);
+  async create(
+    @Args('input') input: CreateOrderInput,
+    @TransactionParam() manager: EntityManager,
+  ) {
+    return this.ordersService.create(manager, input.user, input.orderProducts);
   }
 }

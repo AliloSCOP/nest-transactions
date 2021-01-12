@@ -6,6 +6,7 @@ import { OrderEntity } from './orders/entities/order.entity';
 import { OrdersModule } from './orders/orders.module';
 import { ProductEntity } from './products/entities/product.entity';
 import { ProductsModule } from './products/products.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { ProductsModule } from './products/products.module';
       database: 'db',
       entities: [OrderEntity, ProductEntity, OrderProductEntity],
       synchronize: true,
-      logging: 'all',
+      // logging: 'all',
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,
@@ -26,5 +27,6 @@ import { ProductsModule } from './products/products.module';
     ProductsModule,
     OrdersModule,
   ],
+  controllers: [AppController],
 })
 export class AppModule {}
