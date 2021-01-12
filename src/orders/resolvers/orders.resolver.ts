@@ -37,4 +37,9 @@ export class OrdersResolver {
   async create2(@Args('input') input: CreateOrderInput) {
     return this.ordersService.create2(input.user, input.orderProducts);
   }
+
+  @Mutation(() => Order, { name: 'createOrder3' })
+  async create3(@Args('input') input: CreateOrderInput) {
+    return this.ordersService.createUnitOfWork(input.user, input.orderProducts);
+  }
 }

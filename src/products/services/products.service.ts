@@ -35,7 +35,7 @@ export class ProductsService {
       throw new Error('not enough stock');
     }
 
-    await this.productsRepo.update(1, {
+    await this.productsRepo.update(productId, {
       stock: product.stock - quantity,
       lastCustomer: user,
     });
