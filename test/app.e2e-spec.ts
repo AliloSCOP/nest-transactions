@@ -7,10 +7,17 @@ import {
 } from 'apollo-server-testing';
 import gql from 'graphql-tag';
 import { createConnection } from 'typeorm';
+import {
+  initializeTransactionalContext,
+  patchTypeORMRepositoryWithBaseRepository,
+} from 'typeorm-transactional-cls-hooked';
 import { OrderProductEntity } from '../src/orders/entities/order-product.entity';
 import { OrderEntity } from '../src/orders/entities/order.entity';
 import { ProductEntity } from '../src/products/entities/product.entity';
 import { AppModule } from './../src/app.module';
+
+initializeTransactionalContext();
+patchTypeORMRepositoryWithBaseRepository();
 
 const PRODUCTS = [
   { id: 1, name: 'tomato', lastCustomer: null, stock: 3 },
@@ -102,36 +109,82 @@ describe('AppController (e2e)', () => {
     await app.close();
   });
 
-  it('check products', async () => {
-    const { query } = apolloClient;
-    const {
-      data: { products },
-    } = await query({
-      query: PRODUCTS_QUERY,
-    });
-    expect(products).toEqual(PRODUCTS);
-  });
+  // it('check products', async () => {
+  //   const { query } = apolloClient;
+  //   const {
+  //     data: { products },
+  //   } = await query({
+  //     query: PRODUCTS_QUERY,
+  //   });
+  //   expect(products).toEqual(PRODUCTS);
+  // });
 
-  it('fail order: not enough stock', async () => {
-    const { mutate } = apolloClient;
-    const { errors } = await mutate({
-      mutation: CREATE_ORDER_MUTATION,
-      variables: {
-        input: {
-          user: 'John',
-          orderProducts: [
-            {
-              productId: 1,
-              quantity: 10,
-            },
-          ],
-        },
-      },
-    });
-    expect(errors.length).toBe(1);
-  });
+  // it('fail order: not enough stock', async () => {
+  //   const { mutate } = apolloClient;
+  //   const { errors } = await mutate({
+  //     mutation: CREATE_ORDER_MUTATION,
+  //     variables: {
+  //       input: {
+  //         user: 'John',
+  //         orderProducts: [
+  //           {
+  //             productId: 1,
+  //             quantity: 10,
+  //           },
+  //         ],
+  //       },
+  //     },
+  //   });
+  //   expect(errors.length).toBe(1);
+  // });
 
-  it('ORDER 150ms delay', async () => {
+  // it('ORDER', async () => {
+  //   const { query, mutate } = apolloClient;
+
+  //   const johnOrder = mutate({
+  //     mutation: CREATE_ORDER_MUTATION,
+  //     variables: {
+  //       input: {
+  //         user: 'John',
+  //         orderProducts: [
+  //           {
+  //             productId: 1,
+  //             quantity: 2,
+  //           },
+  //         ],
+  //       },
+  //     },
+  //   });
+
+  //   const bobOrder = waait(10).then(() => {
+  //     return mutate({
+  //       mutation: CREATE_ORDER_MUTATION,
+  //       variables: {
+  //         input: {
+  //           user: 'Bob',
+  //           orderProducts: [
+  //             {
+  //               productId: 1,
+  //               quantity: 1,
+  //             },
+  //           ],
+  //         },
+  //       },
+  //     });
+  //   });
+
+  //   await Promise.all([johnOrder, bobOrder]);
+
+  //   const {
+  //     data: { products },
+  //   } = await query({
+  //     query: PRODUCTS_QUERY,
+  //   });
+
+  //   expect(products.find((p) => p.id === 1).stock).toBe(0);
+  // });
+
+  it('ORDER with deadlock', async () => {
     const { query, mutate } = apolloClient;
 
     const johnOrder = mutate({
@@ -145,52 +198,7 @@ describe('AppController (e2e)', () => {
               quantity: 2,
             },
           ],
-        },
-      },
-    });
-
-    const bobOrder = waait(150).then(() => {
-      return mutate({
-        mutation: CREATE_ORDER_MUTATION,
-        variables: {
-          input: {
-            user: 'Bob',
-            orderProducts: [
-              {
-                productId: 1,
-                quantity: 1,
-              },
-            ],
-          },
-        },
-      });
-    });
-
-    await Promise.all([johnOrder, bobOrder]);
-
-    const {
-      data: { products },
-    } = await query({
-      query: PRODUCTS_QUERY,
-    });
-
-    expect(products.find((p) => p.id === 1).stock).toBe(0);
-  });
-
-  it('ORDER 10ms delay', async () => {
-    const { query, mutate } = apolloClient;
-
-    const johnOrder = mutate({
-      mutation: CREATE_ORDER_MUTATION,
-      variables: {
-        input: {
-          user: 'John',
-          orderProducts: [
-            {
-              productId: 1,
-              quantity: 2,
-            },
-          ],
+          deadlock: true,
         },
       },
     });
@@ -207,6 +215,7 @@ describe('AppController (e2e)', () => {
                 quantity: 1,
               },
             ],
+            deadlock: true,
           },
         },
       });

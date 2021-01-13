@@ -6,6 +6,7 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
+import { Transactional } from 'typeorm-transactional-cls-hooked';
 import { CreateOrderInput } from '../dtos/create-order.dto';
 import { Order } from '../models/order.model';
 import { OrderProductsService } from '../services/order-products.service';
@@ -28,8 +29,15 @@ export class OrdersResolver {
     return this.orderProductsService.findByOrder(order.id);
   }
 
+  @Transactional()
   @Mutation(() => Order, { name: 'createOrder' })
   async create(@Args('input') input: CreateOrderInput) {
+    if (input.deadlock) {
+      return this.ordersService.createWithDeadlock(
+        input.user,
+        input.orderProducts,
+      );
+    }
     return this.ordersService.create(input.user, input.orderProducts);
   }
 }

@@ -8,4 +8,7 @@ export class CreateOrderInput {
 
   @Field(() => [CreateOrderProductInput])
   orderProducts: CreateOrderProductInput[];
+
+  @Field({ nullable: true })
+  deadlock?: boolean;
 }

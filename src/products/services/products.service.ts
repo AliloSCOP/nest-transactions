@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Transactional } from 'typeorm-transactional-cls-hooked';
 import { ProductEntity } from '../entities/product.entity';
 
 @Injectable()
@@ -10,22 +11,23 @@ export class ProductsService {
     private readonly productsRepo: Repository<ProductEntity>,
   ) {}
 
-  findById(id: number) {
-    return this.productsRepo.findOne(id);
+  findById(id: number, lock = false) {
+    return this.productsRepo.findOne(id, {
+      ...(lock ? { lock: { mode: 'pessimistic_write' } } : {}),
+    });
   }
 
   findAll() {
     return this.productsRepo.find();
   }
 
+  @Transactional()
   async decreaseStock(productId: number, quantity: number, user: string) {
     if (quantity < 1) {
       throw new Error('quantity must be a positive integer');
     }
 
-    const product = await this.productsRepo.findOne(productId, {
-      // lock: { mode: 'pessimistic_write' },
-    });
+    const product = await this.findById(productId, true);
 
     if (!product) {
       throw new Error('product does not exist');
