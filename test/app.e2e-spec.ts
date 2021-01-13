@@ -136,7 +136,7 @@ describe('AppController (e2e)', () => {
   //   expect(errors.length).toBe(1);
   // });
 
-  // it('ORDER 150ms delay', async () => {
+  // it('ORDER', async () => {
   //   const { query, mutate } = apolloClient;
 
   //   const johnOrder = mutate({
@@ -154,7 +154,7 @@ describe('AppController (e2e)', () => {
   //     },
   //   });
 
-  //   const bobOrder = waait(150).then(() => {
+  //   const bobOrder = waait(10).then(() => {
   //     return mutate({
   //       mutation: CREATE_ORDER_MUTATION,
   //       variables: {
@@ -182,7 +182,7 @@ describe('AppController (e2e)', () => {
   //   expect(products.find((p) => p.id === 1).stock).toBe(0);
   // });
 
-  it('ORDER 10ms delay', async () => {
+  it('ORDER deadlock', async () => {
     const { query, mutate } = apolloClient;
 
     const johnOrder = mutate({
@@ -196,6 +196,7 @@ describe('AppController (e2e)', () => {
               quantity: 2,
             },
           ],
+          deadlock: true,
         },
       },
     });
@@ -212,6 +213,7 @@ describe('AppController (e2e)', () => {
                 quantity: 1,
               },
             ],
+            deadlock: true,
           },
         },
       });

@@ -32,6 +32,12 @@ export class OrdersResolver {
   @Transactional()
   @Mutation(() => Order, { name: 'createOrder' })
   async create(@Args('input') input: CreateOrderInput) {
+    if (input.deadlock) {
+      return this.ordersService.createWithDeadlock(
+        input.user,
+        input.orderProducts,
+      );
+    }
     return this.ordersService.create(input.user, input.orderProducts);
   }
 }
