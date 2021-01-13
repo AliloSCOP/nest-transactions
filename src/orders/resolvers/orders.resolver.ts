@@ -1,3 +1,4 @@
+import { UseInterceptors } from '@nestjs/common';
 import {
   Args,
   Mutation,
@@ -7,11 +8,13 @@ import {
   Resolver,
 } from '@nestjs/graphql';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
+import { DeadUnlockerInterceptor } from '../../transactions/deadunlocker.interceptor';
 import { CreateOrderInput } from '../dtos/create-order.dto';
 import { Order } from '../models/order.model';
 import { OrderProductsService } from '../services/order-products.service';
 import { OrdersService } from '../services/orders.service';
 
+@UseInterceptors(DeadUnlockerInterceptor)
 @Resolver(() => Order)
 export class OrdersResolver {
   constructor(

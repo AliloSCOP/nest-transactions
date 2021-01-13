@@ -138,53 +138,7 @@ describe('AppController (e2e)', () => {
   //   expect(errors.length).toBe(1);
   // });
 
-  it('ORDER', async () => {
-    const { query, mutate } = apolloClient;
-
-    const johnOrder = mutate({
-      mutation: CREATE_ORDER_MUTATION,
-      variables: {
-        input: {
-          user: 'John',
-          orderProducts: [
-            {
-              productId: 1,
-              quantity: 2,
-            },
-          ],
-        },
-      },
-    });
-
-    const bobOrder = waait(10).then(() => {
-      return mutate({
-        mutation: CREATE_ORDER_MUTATION,
-        variables: {
-          input: {
-            user: 'Bob',
-            orderProducts: [
-              {
-                productId: 1,
-                quantity: 1,
-              },
-            ],
-          },
-        },
-      });
-    });
-
-    await Promise.all([johnOrder, bobOrder]);
-
-    const {
-      data: { products },
-    } = await query({
-      query: PRODUCTS_QUERY,
-    });
-
-    expect(products.find((p) => p.id === 1).stock).toBe(0);
-  });
-
-  // it('ORDER with deadlock', async () => {
+  // it('ORDER', async () => {
   //   const { query, mutate } = apolloClient;
 
   //   const johnOrder = mutate({
@@ -198,7 +152,6 @@ describe('AppController (e2e)', () => {
   //             quantity: 2,
   //           },
   //         ],
-  //         deadlock: true,
   //       },
   //     },
   //   });
@@ -215,7 +168,6 @@ describe('AppController (e2e)', () => {
   //               quantity: 1,
   //             },
   //           ],
-  //           deadlock: true,
   //         },
   //       },
   //     });
@@ -231,4 +183,52 @@ describe('AppController (e2e)', () => {
 
   //   expect(products.find((p) => p.id === 1).stock).toBe(0);
   // });
+
+  it('ORDER with deadlock', async () => {
+    const { query, mutate } = apolloClient;
+
+    const johnOrder = mutate({
+      mutation: CREATE_ORDER_MUTATION,
+      variables: {
+        input: {
+          user: 'John',
+          orderProducts: [
+            {
+              productId: 1,
+              quantity: 2,
+            },
+          ],
+          deadlock: true,
+        },
+      },
+    });
+
+    const bobOrder = waait(10).then(() => {
+      return mutate({
+        mutation: CREATE_ORDER_MUTATION,
+        variables: {
+          input: {
+            user: 'Bob',
+            orderProducts: [
+              {
+                productId: 1,
+                quantity: 1,
+              },
+            ],
+            deadlock: true,
+          },
+        },
+      });
+    });
+
+    await Promise.all([johnOrder, bobOrder]);
+
+    const {
+      data: { products },
+    } = await query({
+      query: PRODUCTS_QUERY,
+    });
+
+    expect(products.find((p) => p.id === 1).stock).toBe(0);
+  });
 });

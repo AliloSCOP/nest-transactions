@@ -63,7 +63,7 @@ export class OrdersService {
   async createWithDeadlock(
     user: string,
     basket: { productId: number; quantity: number }[],
-    delay = 100,
+    delay = 2000,
   ) {
     await waait(delay);
 
