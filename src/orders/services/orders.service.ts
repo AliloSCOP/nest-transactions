@@ -96,7 +96,7 @@ export class OrdersService {
   createUnitOfWork = async (
     user: string,
     basket: { productId: number; quantity: number }[],
-    delay = 3000,
+    delay = 100,
     attempt = 0,
   ) => {
     const queryRunner = this.connection.createQueryRunner();
