@@ -1,7 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UseInterceptors } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProductsService } from '../../products/services/products.service';
+import { TransactionalInterceptor } from '../../tools/transactions/transaction.interceptor';
+// import { Transactional } from '../../tools/transactions/transactional.decorator';
 import { OrderEntity } from '../entities/order.entity';
 import { OrderProductsService } from './order-products.service';
 
@@ -25,6 +27,8 @@ export class OrdersService {
     return this.ordersRepo.find();
   }
 
+  // @Transactional()
+  // @UseInterceptors(new TransactionalInterceptor())
   async create(
     user: string,
     basket: { productId: number; quantity: number }[],

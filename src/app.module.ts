@@ -18,7 +18,7 @@ import { ProductsModule } from './products/products.module';
       database: 'db',
       entities: [OrderEntity, ProductEntity, OrderProductEntity],
       synchronize: true,
-      logging: 'all',
+      // logging: 'all',
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,

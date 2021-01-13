@@ -25,7 +25,10 @@ export class ProductsService {
       throw new Error('quantity must be a positive integer');
     }
 
-    const product = await this.findById(productId, true);
+    const product = await this.findById(
+      productId,
+      // true
+    );
 
     if (!product) {
       throw new Error('product does not exist');
