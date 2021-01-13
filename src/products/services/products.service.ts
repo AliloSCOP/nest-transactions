@@ -10,8 +10,10 @@ export class ProductsService {
     private readonly productsRepo: Repository<ProductEntity>,
   ) {}
 
-  findById(id: number) {
-    return this.productsRepo.findOne(id);
+  findById(id: number, lock = false) {
+    return this.productsRepo.findOne(id, {
+      ...(lock ? { lock: { mode: 'pessimistic_write' } } : {}),
+    });
   }
 
   findAll() {
@@ -23,9 +25,7 @@ export class ProductsService {
       throw new Error('quantity must be a positive integer');
     }
 
-    const product = await this.productsRepo.findOne(productId, {
-      // lock: { mode: 'pessimistic_write' },
-    });
+    const product = await this.findById(productId, true);
 
     if (!product) {
       throw new Error('product does not exist');

@@ -30,9 +30,6 @@ export class OrdersService {
     basket: { productId: number; quantity: number }[],
     delay = 100,
   ) {
-    const order = await this.ordersRepo.save({
-      user,
-    });
     await waait(delay);
 
     await Promise.all(
@@ -40,6 +37,12 @@ export class OrdersService {
         this.productsService.decreaseStock(b.productId, b.quantity, user),
       ),
     );
+
+    await waait(delay);
+
+    const order = await this.ordersRepo.save({
+      user,
+    });
 
     await waait(delay);
 
