@@ -53,4 +53,33 @@ export class OrdersService {
 
     return order;
   }
+
+  async createWithDeadlock(
+    user: string,
+    basket: { productId: number; quantity: number }[],
+    delay = 100,
+  ) {
+    const order = await this.ordersRepo.save({
+      user,
+    });
+    await waait(delay);
+
+    await Promise.all(
+      basket.map((b) =>
+        this.orderProductsService.create(order.id, b.productId, b.quantity),
+      ),
+    );
+
+    await waait(delay);
+
+    await Promise.all(
+      basket.map((b) =>
+        this.productsService.decreaseStock(b.productId, b.quantity, user),
+      ),
+    );
+
+    await waait(delay);
+
+    return order;
+  }
 }
