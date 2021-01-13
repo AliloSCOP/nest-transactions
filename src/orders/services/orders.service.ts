@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProductsService } from '../../products/services/products.service';
+import { Transactional } from '../../transactions/Transactional';
 import { OrderEntity } from '../entities/order.entity';
 import { OrderProductsService } from './order-products.service';
 
@@ -25,6 +26,7 @@ export class OrdersService {
     return this.ordersRepo.find();
   }
 
+  @Transactional()
   async create(
     user: string,
     basket: { productId: number; quantity: number }[],
